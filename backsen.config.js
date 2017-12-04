@@ -24,7 +24,7 @@ module.exports = {
      * }
      * 
      */
-    controllerType: "callback",
+    controllerType: "class",
 
     rootPath: '/src', // app根目录
 
