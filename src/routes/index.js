@@ -1,9 +1,7 @@
 
 module.exports = class IndexContrell{
 
-  constructor(req , res){
-
-    console.log(req.path)
+  constructor(req , res , next){
 
     res.render('index', { title: 'Express' });
 
