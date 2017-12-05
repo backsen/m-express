@@ -21,15 +21,47 @@ module.exports = class Core{
             port: config.port || "3100"
         }
 
-        return this.setRoutes(config.routes);
+        // 设置模板引擎
+
+        this.app = this.setTemp();
+
+        // 配置中间件 ， 在路由加载之前
+        
+        this.app = this.setRouteBefor();
+
+        // 设置静态文件配置
+
+        this.app = this.setStatic();
+
+        // 设置路由
+
+        this.app = this.setRoutes(config.routes);
+
+        // 配置中间件 ， 在路由加载之后
+
+        this.app = this.setRouteAfter();
+
+        return this.app;
 
     }
 
-    setApp(){
+    setRouteBefor(){
 
-        if(config.app && typeof config.app == "function"){
+        if(config.routeBefor && typeof config.routeBefor == "function"){
 
-            return config.app(this.app);
+            return config.routeBefor(this.app) || this.app;
+
+        }
+
+        return this.app;
+
+    }
+
+    setRouteAfter(){
+
+        if(config.routeAfter && typeof config.routeAfter == "function"){
+            
+            return config.routeAfter(this.app) || this.app;
 
         }
 
@@ -39,7 +71,7 @@ module.exports = class Core{
 
     setRoutes(routes){
         
-        var routeBefor = this.rootPath + (config.controllerRootPath || '');
+        var routeBefor = this.rootPath + (config.controllerRootPath || '') , self = this;
 
         routes.forEach(function(route){
 
@@ -66,11 +98,13 @@ module.exports = class Core{
             newRoute.method = newRoute.method || "GET";
             
             // 写入路由
-            this.app.use(newRoute.path , new Route(newRoute));
+            self.app.use(newRoute.path , new Route(newRoute));
 
         }.bind(this));
 
-        return this.setTemp();
+        // console.log(this.app);
+
+        return this.app;
 
     }
 
@@ -82,13 +116,13 @@ module.exports = class Core{
 
         if(config.temp && typeof config.temp === "function"){
 
-            config.temp(this.app);
+            this.app = config.temp(this.app);
 
         }else{
             this.app.set('view engine', 'jade');
         }
 
-        return this.setStatic();
+        return this.app;
 
     }
 
@@ -98,7 +132,7 @@ module.exports = class Core{
 
         this.app.use(express.static(staticPath));
         
-        return this.setApp();
+        return this.app;
     }
 
 }
