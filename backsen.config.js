@@ -68,7 +68,7 @@ module.exports = {
      * controllerType：控制器的类型 -> callback | class; 可空，在配置中可全局指定，如未全局指定，则默认class，详细解释看配置文件controllerType描述
      */
 
-    routes: require('./routes.js'), // 加载路由配置
+    routes: require('./config/routes'), // 加载路由配置
 
     views: "/art-temp", // 指定模板存放地址 -> /src/art-temp
 
@@ -83,7 +83,7 @@ module.exports = {
 
     routeBefor: function(app){ // 自定义app ， 如：中间件等。会在加载路由之前执行,请勿把错误处理程序放在app里插入
 
-        var appSettingFn = require('./use');
+        var appSettingFn = require('./config/use');
 
         return appSettingFn(app);
 
